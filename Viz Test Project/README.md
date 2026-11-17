@@ -4,7 +4,7 @@
 
 ## Open it
 
-Double-click `../Viz Test.app`. Keep `../Viz Test Support` beside the app. On this Mac, the test library points to `/Users/apple/Desktop/Others/UCSF/raw_UCSF`. A collaborator should set their own recording path as described under **Build from a clone**. The launcher rejects write-mode Python file opens for MAP, MPX, and PLX recordings. Its annotation database and cache live in `../Viz Test Support`, so changes made in the test app do not affect the original app's settings.
+Double-click `../Viz Test.app`. Viz Test looks for a local `raw_UCSF` folder using its saved path, nearby folders, and macOS Spotlight. If it cannot find one, choose the folder when prompted on first launch. The choice is saved in a local `../Viz Test Support` folder, which Viz Test creates as needed. The launcher rejects write-mode Python file opens for MAP, MPX, and PLX recordings. Its annotation database and cache live in `../Viz Test Support`, so changes made in the test app do not affect the original app's settings.
 
 Viz Test 3.5.3 includes Viz_v2's PLX reader, MAP/MPX/PLX filters, per-channel plot height handles, updated patient metadata, and saved PLX sorts and flags. The imported PLX sorts remain subject to the test app's single-unit review and crop rules. Viz_v2's database was read without modifying it, and existing Viz Test MAP/MPX annotations were preserved. The annotation backup is `../Viz Test Support/Workspace/00 Viz/Data/recording_flags.before-v2-20261111-144341.db`.
 
@@ -40,23 +40,16 @@ Crop Data displays the single-unit review state. New exports include `single_uni
 
 ## Build from a clone
 
-This project is intended to be the repository root. Clone it into a folder named `Viz Test Project` (or any other name), then on an Apple silicon Mac install Python 3.12 and run from Terminal:
+On an Apple silicon Mac, pull the repository, install Python 3.12, and run from Terminal:
 
 ```sh
-cd "/path/to/Viz Test Project"
+cd "/path/to/Viz/Viz Test Project"
 ./rebuild-viz-test.sh
 ```
 
 The script creates `.venv` on its first run, installs the pinned Python packages, and builds `Viz Test.app` **beside** the project folder. It signs the app locally with an ad hoc signature. It targets Apple silicon (`arm64`); other Macs need a change to the build script. Internet access is needed for the first dependency install. Close Viz Test before rebuilding because the script replaces the built app. It preserves the neighboring `Viz Test Support` folder.
 
-The recordings and annotations are **not** in Git. Obtain the MAP, MPX, and PLX files separately and keep them in their `raw_UCSF` patient-folder layout. Before the first launch, point your local test support folder at that library (replace the example path with your own absolute path):
-
-```sh
-mkdir -p "../Viz Test Support/Workspace/00 Viz"
-printf '%s\n' '/absolute/path/to/raw_UCSF' > "../Viz Test Support/Workspace/00 Viz/library-location.txt"
-```
-
-Run those commands from the `Viz Test Project` folder. Keep `Viz Test Support` beside the app and project. The app creates its own annotation database and cache there; these are local to each collaborator. Existing sorts, notes, crop decisions, channel labels, and other annotations do not automatically travel through Git. Share them separately only if intended and permitted for the recordings.
+The recordings and annotations are **not** in Git. Obtain the MAP, MPX, and PLX files separately and keep them in their `raw_UCSF` patient-folder layout. Viz Test creates `Viz Test Support` beside the app and project and saves each computer's recording location there. If automatic discovery does not find the library, select it once when prompted. The app creates its own annotation database and cache there; these are local to each collaborator. Existing sorts, notes, crop decisions, channel labels, and other annotations do not automatically travel through Git. Share them separately only if intended and permitted for the recordings.
 
 ## Pull and rebuild after source changes
 

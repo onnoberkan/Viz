@@ -2,6 +2,7 @@ from pathlib import Path
 from collections import Counter, OrderedDict
 import argparse
 import json
+import os
 import sqlite3
 import sys
 import time
@@ -1084,7 +1085,23 @@ def main():
     imports_ready=time.perf_counter()
     app=QApplication(sys.argv[:1]);theme.apply(app)
     application_ready=time.perf_counter()
-    w=Viewer(library_paths.open_root(args.root or default_root()));w.show()
+    root=args.root or default_root()
+    if not args.root and os.environ.get('VIZ_TEST_SUPPORT'):
+        from recording_locator import find_library, save_library, valid_library
+        support=Path(os.environ['VIZ_TEST_SUPPORT'])
+        root=find_library(default_root(),support)
+        if root is None:
+            while True:
+                chosen=QFileDialog.getExistingDirectory(None,'Choose your raw_UCSF recordings folder',str(Path.home()))
+                if not chosen:return
+                if valid_library(chosen):
+                    root=save_library(support,chosen)
+                    break
+                QMessageBox.warning(None,'Choose recordings folder',
+                                    'Choose the raw_UCSF folder containing patient folders.')
+        os.environ['VIZ_TEST_RECORDINGS']=str(root)
+        library_paths.TEST_RECORDINGS=Path(root)
+    w=Viewer(library_paths.open_root(root));w.show()
     window_ready=time.perf_counter()
     if args.startup_test:
         import cProfile

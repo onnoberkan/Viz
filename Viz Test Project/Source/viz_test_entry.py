@@ -6,6 +6,8 @@ import os
 from pathlib import Path
 import sys
 
+from recording_locator import find_library, save_library
+
 
 def delivery_directory():
     if getattr(sys, 'frozen', False):
@@ -15,10 +17,13 @@ def delivery_directory():
 
 delivery = delivery_directory()
 support = delivery / 'Viz Test Support'
-recordings = Path(os.environ.get('VIZ_TEST_RECORDINGS',
-    '/Users/apple/Desktop/Others/UCSF/raw_UCSF')).resolve()
+recordings = find_library(delivery, support)
+if recordings is not None:
+    location = support / 'Workspace/00 Viz/library-location.txt'
+    if not location.is_file() or location.read_text().strip() != str(recordings):
+        save_library(support, recordings)
 os.environ['VIZ_TEST_SUPPORT'] = str(support)
-os.environ['VIZ_TEST_RECORDINGS'] = str(recordings)
+os.environ['VIZ_TEST_RECORDINGS'] = str(recordings or support / 'Workspace')
 
 
 def in_recordings(path):
@@ -28,7 +33,7 @@ def in_recordings(path):
         resolved = Path(os.fspath(path)).resolve()
     except (TypeError, ValueError, OSError):
         return False
-    return (resolved == recordings or recordings in resolved.parents or
+    return ((recordings is not None and (resolved == recordings or recordings in resolved.parents)) or
             resolved.suffix.lower() in ('.map','.mpx','.plx'))
 
 
@@ -60,8 +65,8 @@ builtins.open = read_only_open
 io.open = read_only_io_open
 os.open = read_only_os_open
 
-if not any(arg == '--root' or arg.startswith('--root=') for arg in sys.argv[1:]):
-    sys.argv.extend(['--root', str(support / 'Workspace')])
+if recordings is not None and not any(arg == '--root' or arg.startswith('--root=') for arg in sys.argv[1:]):
+    sys.argv.extend(['--root', str(recordings)])
 
 from alpha_viewer import main  # noqa: E402
 
