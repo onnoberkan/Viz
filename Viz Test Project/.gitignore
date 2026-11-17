@@ -1,0 +1,12 @@
+.DS_Store
+.venv/
+build/
+__pycache__/
+*.py[cod]
+*.app/
+Source.before-*/
+*.db
+*.db-*
+*.sqlite*
+good_channels.json
+import-viz-v2-data.py

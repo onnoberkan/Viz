@@ -1,3 +1,20 @@
+# Support Folder
+Viz Test Support/
+
+# From Viz Test Project/.gitignore
+.DS_Store
+.venv/
+build/
+__pycache__/
+*.py[cod]
+*.app/
+Source.before-*/
+*.db
+*.db-*
+*.sqlite*
+good_channels.json
+import-viz-v2-data.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

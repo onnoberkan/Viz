@@ -1,2 +1,7 @@
-# Viz
-Viz is an app to visualize, annotate, and label neural recordings in .map, .mpx, and .plx file formats.
+# Viz Project
+
+## For Details About the Viz App
+See Viz Test Project/README.md
+
+## To Get Started
+Clone this repo, see 'Build from a clone' section in the above README.
